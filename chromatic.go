@@ -9,8 +9,6 @@ import (
 
 const sampleRate = 44100
 
-var step = math.Pow(2, 1.0/12)
-
 func main() {
 	portaudio.Initialize()
 	defer portaudio.Terminate()
@@ -20,7 +18,7 @@ func main() {
 
 	ss := make([]*Sine, 0, len(Mchord))
 	for _, f := range Mchord {
-		s, err := newSine(220*math.Pow(step, f), sampleRate)
+		s, err := newSine(220*math.Pow(2, f/12), sampleRate)
 		if err != nil {
 			panic(err)
 		}
@@ -62,7 +60,7 @@ func newSine(freq, sampleRate float64) (*Sine, error) {
 }
 
 func (s *Sine) Transpose(n int) {
-	s.step *= math.Pow(step, float64(n))
+	s.step *= math.Pow(2, float64(n)/12)
 }
 
 func (s *Sine) End() error {
