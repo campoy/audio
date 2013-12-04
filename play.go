@@ -13,6 +13,21 @@ import (
 
 const sampleRate = 44100
 
+func playNotes(sine *audio.Sine) error {
+	s := bufio.NewScanner(os.Stdin)
+	for s.Scan() {
+		for _, f := range strings.Fields(s.Text()) {
+			n, err := note.FromString(f)
+			if err != nil {
+				fmt.Println("invalid note: ", f)
+			}
+			sine.SetFreq(n.Freq())
+			time.Sleep(250 * time.Millisecond)
+		}
+	}
+	return s.Err()
+}
+
 func main() {
 	audio.Initialize()
 	defer audio.Terminate()
@@ -23,19 +38,9 @@ func main() {
 	go func() {
 		defer s.Stop()
 
-		sc := bufio.NewScanner(os.Stdin)
-		for sc.Scan() {
-			for _, f := range strings.Fields(sc.Text()) {
-				n, err := note.FromString(f)
-				if err != nil {
-					fmt.Println("invalid note: ", f)
-				}
-				sine.SetFreq(n.Freq())
-				time.Sleep(250 * time.Millisecond)
-			}
-		}
-		if sc.Err() != nil {
-			panic(sc.Err())
+		err := playNotes(sine)
+		if err != nil {
+			panic(err)
 		}
 	}()
 
@@ -43,5 +48,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
 	fmt.Println("good bye!")
 }
