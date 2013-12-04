@@ -22,7 +22,6 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-		defer s.End()
 		ss = append(ss, s)
 	}
 
