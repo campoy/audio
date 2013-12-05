@@ -13,7 +13,7 @@ import (
 
 const sampleRate = 44100
 
-func playNotes(sine *audio.Sine) error {
+func playNotes(ins audio.Instrument) error {
 	s := bufio.NewScanner(os.Stdin)
 	for s.Scan() {
 		for _, f := range strings.Fields(s.Text()) {
@@ -21,7 +21,7 @@ func playNotes(sine *audio.Sine) error {
 			if err != nil {
 				fmt.Println("invalid note: ", f)
 			}
-			sine.SetFreq(n.Freq())
+			ins.SetFreq(n.Freq())
 			time.Sleep(250 * time.Millisecond)
 		}
 	}
@@ -32,13 +32,12 @@ func main() {
 	audio.Initialize()
 	defer audio.Terminate()
 
-	sine := audio.NewSine(0, sampleRate)
-	s := audio.NewSound(sine, sampleRate)
+	s := audio.NewSine(0, sampleRate)
 
 	go func() {
 		defer s.Stop()
 
-		err := playNotes(sine)
+		err := playNotes(s)
 		if err != nil {
 			panic(err)
 		}
